@@ -18,9 +18,6 @@ window.addEventListener("scroll", () => {
 });
 
 function goTop() {
-   // document.getElementById("home").scrollHeight({
-   //    behavior: "smooth"
-   // })
    window.scrollTo({
       top: navBox.offsetHeight,
       behavior: "smooth"

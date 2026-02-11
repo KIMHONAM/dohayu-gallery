@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dohayu Portfolio - Photography Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/dohayu-gallery.css">
+    <!--
+
+Dohayu Gallery
+
+-->
+</head>
+
+<body>
+    <audio id="mainAudio"></audio>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container" id="nav-container">
+            <a href="index.html" class="logo">
+                <svg class="logo-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <image href="./assets/css/images/togetherHand.png" x="0" y="0" width="40" height="40" />
+                </svg>
+                DOHA DOYU
+            </a>
+            <button class="top-arrow-btn" id="topBtn" onclick="goTop()"></button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">>
+        <div class="hero-content" id="topBannerId">
+            <!-- <h1>Doha’s Memories</h1> -->
+            <h1><span> </span>
+                <a id="audioPlaBtn" class="audioLink">
+                    <img class="audio-play-img" src="./assets/css/images/circle_play.apng"
+                        style="vertical-align: middle"></img>
+                </a>
+            </h1>
+            <p></p>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filter-container">
+        <div class="filter-buttons">
+            <button id="yearBtn" class="filter-btn active" data-filter="all">All</button>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-container" id="gallery">
+        <div class="gallery-grid" id="galleryGrid">            
+            
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="closeLightbox">×</button>
+        <button class="lightbox-nav lightbox-prev" id="prevImage">‹</button>
+        <button class="lightbox-nav lightbox-next" id="nextImage">›</button>
+        <div class="lightbox-content">
+            <img src="" alt="" id="lightboxImage">
+            <div class="lightbox-info">
+                <h3 id="lightboxTitle"></h3>
+                <p id="lightboxCategory"></p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Dohayu Gallery • Designed by Dohayu family</a></p>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
+    <script src="./assets/js/dohayu-scripts.js" ></script>
+</body>
+
+</html>

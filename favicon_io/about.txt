@@ -1,6 +1,0 @@
-This favicon was generated using the following font:
-
-- Font Title: Big Shoulders Stencil
-- Font Author: undefined
-- Font Source: https://fonts.gstatic.com/s/bigshouldersstencil/v3/TwM2-JIEQ1Je5sI6Bx1TKHD83rT3u3NSCfbFxqa9oQbR_CiZMgOzPB7iSLKdsgE9Sp2x5eZJnqtwIp4I.ttf
-- Font License: undefined)

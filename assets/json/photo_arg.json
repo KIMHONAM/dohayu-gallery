@@ -1,0 +1,90 @@
+{
+  "dohaBirth": 2018,
+  "doyuBirth": 2022,
+  "photoPath": "./assets/photos/doha/contents/",
+  "dohaPhotoArg": [
+    {
+      "year": 2018,
+      "photos": [
+        "2018_doha_20180319_hospital.jpg",
+        "2018_doha_20180426_home.jpg",
+        "2018_doha_20180513_studio.jpg",
+        "2018_doha_20180626_home.jpg",
+        "2018_doha_20181004_home.jpg",
+        "2018_doha_20181215_home.jpg"
+      ]
+    },
+    {
+      "year": 2019,
+      "photos": [
+        "2019_doha_20190114_home.jpg",
+        "2019_doha_20190228_uiwang.jpg",
+        "2019_doha_20190316_doll.jpg",
+        "2019_doha_20190507_global.jpg",
+        "2019_doha_20190614_ktx.jpg",
+        "2019_doha_20190624_uiwang.jpg",
+        "2019_doha_20190918_home.jpg",
+        "2019_doha_20191225_hospital.jpg"
+      ]
+    },
+    {
+      "year": 2020,
+      "photos": [
+        "2020_doha_1.jpg",
+        "2020_doha_2.jpg",
+        "2020_doha_3.jpg",
+        "2020_doha_4.jpg",
+        "2020_doha_5.jpg",
+        "2020_doha_6.jpg",
+        "2020_doha_8.jpg"
+      ]
+    },
+    {
+      "year": 2021,
+      "photos": [
+        "KakaoTalk_20260211_180809174_02.jpg",
+        "KakaoTalk_20260211_180809174_05.jpg",
+        "KakaoTalk_20260211_180809174_06.jpg",
+        "KakaoTalk_20260211_180809174_07.jpg",
+        "KakaoTalk_20260211_180809174_11.jpg",
+        "KakaoTalk_20260211_180809174_14.jpg",
+        "KakaoTalk_20260211_180809174_15.jpg",
+        "KakaoTalk_20260211_180809174_17.jpg"
+      ]
+    },
+    {
+      "year": 2022,
+      "photos": []
+    },
+    {
+      "year": 2023,
+      "photos": []
+    },
+    {
+      "year": 2024,
+      "photos": []
+    },
+    {
+      "year": 2025,
+      "photos": []
+    }
+  ],
+  "doyuPhotoArg": [
+    {
+      "year": 2022,
+      "photos": []
+    },
+    {
+      "year": 2023,
+      "photos": []
+    },
+    {
+      "year": 2024,
+      "photos": []
+    },
+    {
+      "year": 2025,
+      "photos": []
+    }
+  ]
+}

@@ -17,6 +17,11 @@ Dohayu Gallery
 		url("../webfonts/NotoSerifKR-VariableFont_wght.woff") format("woff");
 }
 
+html,
+body {
+	touch-action: manipulation;
+}
+
 :root {
 	--color-snow: #fafbfc;
 	--color-ice: #e8f4f8;
@@ -35,7 +40,12 @@ body {
 	background: linear-gradient(135deg, var(--color-snow) 0%, var(--color-ice) 100%);
 	color: var(--color-charcoal);
 	line-height: 1.6;
-	min-height: 100vh;
+	min-height: 100lvh;
+	/*  dvh - 현재 보여지는 뷰포트 높이를 동적 ,
+	 	svh - 주소 표시줄이 없어져도 기존 주소표시줄의 높이 값을 뺀 나머지 값, 
+		lvh - 주소 표시줄이 있더라도 주소 표시줄이 없을 때의 총 화면의 길이
+	 */
+	min-height: -webkit-fill-available;
 }
 
 /* Navigation */
@@ -906,9 +916,11 @@ footer a:hover {
 		width: 3rem;
 		height: 3rem;
 	}
-	.lightbox-content img {		
+
+	.lightbox-content img {
 		max-height: 50vh;
 	}
+
 	.top-arrow-btn {
 		width: 1.3rem;
 		height: 1.3rem;

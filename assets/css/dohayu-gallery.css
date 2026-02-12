@@ -38,7 +38,9 @@ body {
 	background: linear-gradient(135deg, var(--color-snow) 0%, var(--color-ice) 100%);
 	color: var(--color-charcoal);
 	line-height: 1.6;
-	min-height: 100lvh;
+
+	height:100%;
+	min-height: 100%;
 	/*  dvh - 현재 보여지는 뷰포트 높이를 동적 ,
 	 	svh - 주소 표시줄이 없어져도 기존 주소표시줄의 높이 값을 뺀 나머지 값, 
 		lvh - 주소 표시줄이 있더라도 주소 표시줄이 없을 때의 총 화면의 길이
@@ -187,31 +189,49 @@ nav {
 
 .hero-dh-bg:nth-child(1) {
 	background-image: url('../photos/doha/main/doha_1.jpg');
+	background-image: image-set(url("../photos/doha/main/doha_1.avif") type("image/avif"),
+			url("../photos/doha/main/doha_1.webp") type("image/webp"),
+			url("../photos/doha/main/doha_1.jpg") type("image/jpeg"));
 	animation-delay: 0s;
 }
 
 .hero-dh-bg:nth-child(2) {
 	background-image: url('../photos/doha/main/doha_2.jpg');
+	background-image: image-set(url("../photos/doha/main/doha_2.avif") type("image/avif"),
+			url("../photos/doha/main/doha_2.webp") type("image/webp"),
+			url("../photos/doha/main/doha_2.jpg") type("image/jpeg"));
 	animation-delay: 3s;
 }
 
 .hero-dh-bg:nth-child(3) {
 	background-image: url('../photos/doha/main/doha_3.jpg');
+	background-image: image-set(url("../photos/doha/main/doha_3.avif") type("image/avif"),
+			url("../photos/doha/main/doha_3.webp") type("image/webp"),
+			url("../photos/doha/main/doha_3.jpg") type("image/jpeg"));
 	animation-delay: 6s;
 }
 
 .hero-dy-bg:nth-child(1) {
 	background-image: url('../photos/doyu/main/doyu_1.jpg');
+	background-image: image-set(url("../photos/doha/main/doyu_1.avif") type("image/avif"),
+			url("../photos/doha/main/doyu_1.webp") type("image/webp"),
+			url("../photos/doha/main/doyu_1.jpg") type("image/jpeg"));
 	animation-delay: 0s;
 }
 
 .hero-dy-bg:nth-child(2) {
 	background-image: url('../photos/doyu/main/doyu_2.jpg');
+	background-image: image-set(url("../photos/doha/main/doyu_2.avif") type("image/avif"),
+			url("../photos/doha/main/doyu_2.webp") type("image/webp"),
+			url("../photos/doha/main/doyu_2.jpg") type("image/jpeg"));
 	animation-delay: 3s;
 }
 
 .hero-dy-bg:nth-child(3) {
 	background-image: url('../photos/doyu/main/doyu_4.jpg');
+	background-image: image-set(url("../photos/doha/main/doyu_4.avif") type("image/avif"),
+			url("../photos/doha/main/doyu_4.webp") type("image/webp"),
+			url("../photos/doha/main/doyu_4.jpg") type("image/jpeg"));
 	animation-delay: 6s;
 }
 
@@ -405,12 +425,25 @@ nav {
 	box-shadow: 0 12px 40px rgba(123, 168, 189, 0.15);
 }
 
-.gallery-item img {
+/* .gallery-item img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 	display: block;
 	transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+} */
+
+/* work */
+.gallery-item img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	opacity: 0;
+	transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gallery-item img.loaded {
+	opacity: 1;
 }
 
 .gallery-item:hover img {
@@ -452,10 +485,14 @@ nav {
 .lightbox {
 	display: none;
 	position: fixed;
-	top: 0;
+	top: env(safe-area-inset-top, 0);
 	left: 0;
 	width: 100%;
-	height: 100%;
+	height: 100%;		
+	
+	min-height: 100dvh;
+	min-height: -webkit-fill-available;
+
 	background: rgba(250, 251, 252, 0.98);
 	z-index: 2000;
 	align-items: center;

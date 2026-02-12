@@ -16,10 +16,66 @@ const comment = isDoha ? "사랑이 자라던 시간" : "너로 인해 따뜻해
 const titleContent = isDoha ? "도하의 기억" : "도유의 기억";
 
 const jsonFilePath = "/assets/json/photo_arg.json";
+const isMobile = window.innerWidth <= 768;
 
 function isDohaMethod() {
   return who === "doha" ? true : false;
 }
+
+// work ---- 스크롤 범위만 요청
+document.addEventListener("DOMContentLoaded", async function () {
+
+  await initImageSection();
+
+  const images = document.querySelectorAll(".gallery-item img");
+  // 📱 모바일 기준 판별
+  const isMobile = window.innerWidth <= 768;
+  // 첫 화면 eager 개수
+  const eagerCount = isMobile ? 2 : 6;
+  // 1️⃣ IntersectionObserver 설정
+  const pictures = document.querySelectorAll(".lazy-picture");
+  
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadPicture(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      rootMargin: "300px",
+    },
+  );
+
+  pictures.forEach((picture, index) => {
+    if (index < eagerCount) {
+      loadPicture(picture);
+    } else {
+      observer.observe(picture);
+    }
+  });
+  
+  function loadPicture(picture) {
+    
+    const sources = picture.querySelectorAll("source");
+    const img = picture.querySelector("img");
+    
+
+    sources.forEach((source) => {
+      source.srcset = source.dataset.srcset;
+    });
+
+    img.src = img.dataset.src;
+
+    img.onload = () => {
+      img.classList.add("loaded");
+    };
+  }
+
+});
 
 async function initImageSection() {
   const res = await fetch(jsonFilePath);
@@ -75,14 +131,33 @@ async function initImageSection() {
 
   // json에 담긴 사진 년/파일명 만큼  div 태그 구역 생성
   for (const item of isDoha ? data.dohaPhotoArg : data.doyuPhotoArg) {
-    for (const fileName of item.photos) {
+    let tallCnt = 0;
+    for (const fileInfo of item.photos) {
       let contentDiv = document.createElement("div");
       contentDiv.className = "gallery-item";
       contentDiv.dataset.category = item.year + "";
 
+      // work - image/avif 파일 추가
+
       let imgTag = document.createElement("img");
-      imgTag.src = photoPath + item.year + "/" + fileName;
+      const photoFullPath = photoPath + item.year + "/" + fileInfo.fileName;
+      const avifPath = changeExtSafe(photoFullPath, "avif");
+      const webpPath = changeExtSafe(photoFullPath, "webp");
+
+      imgTag.dataset.src = photoFullPath;
       imgTag.loading = "lazy";
+
+      const pictureTag = document.createElement("picture");
+      const avifSource = document.createElement("source");
+      avifSource.dataset.srcset = avifPath;
+      avifSource.type = "image/avif";
+      const webpSource = document.createElement("source");
+      webpSource.dataset.srcset = webpPath;
+      webpSource.type = "image/webp";
+
+      pictureTag.className = "lazy-picture";
+      pictureTag.appendChild(avifSource);
+      pictureTag.appendChild(webpSource);
 
       let overLayDiv = document.createElement("div");
       overLayDiv.className = "gallery-overlay";
@@ -93,45 +168,44 @@ async function initImageSection() {
       let overlayPTag = document.createElement("p");
       overlayPTag.className = "gallery-category";
 
-      // 사진 속성 일기
-      const imgComments = await readExifFromImg(
-        imgTag.src
-      );
+      overlayH3Tag.textContent = fileInfo.title;
+      overlayPTag.textContent = fileInfo.date + " / " + fileInfo.place;
+      imgTag.alt = fileInfo.title;
+      if (tallCnt++ % 6 === 0) {imgTag.className = imgTag.className + " tall";}
 
-      overlayH3Tag.textContent = imgComments.title;
-      overlayPTag.textContent = imgComments.textContent;
-      imgTag.alt = imgComments.title;
+      pictureTag.appendChild(imgTag);
 
       overLayDiv.appendChild(overlayH3Tag);
       overLayDiv.appendChild(overlayPTag);
 
-      contentDiv.appendChild(imgTag);
+      contentDiv.appendChild(pictureTag);
       contentDiv.appendChild(overLayDiv);
 
-      contentArr.push(contentDiv);
+      // contentArr.push(contentDiv);
+      targetContentDiv.appendChild(contentDiv);
     }
   }
 
-  let shuffled = shuffleArray(contentArr);
-  let cur = 0;
-  let lazyCnt = 0;
+  // let shuffled = shuffleArray(contentArr);
+  // let cur = 0;
+  // let lazyCnt = 0;
 
-  for (const shuffledItem of shuffled) {
-    // 6번째까지만 초기 로딩 이후 lazy loading
-    const lazyCntLimit = 6;
-    const imgTagInShuffled = shuffledItem.getElementsByTagName("img")[0];
+  // for (const shuffledItem of shuffled) {
+  //   // 6번째까지만 초기 로딩 이후 lazy loading
+  //   const lazyCntLimit = isMobile ? 2 : 6;
+  //   const imgTagInShuffled = shuffledItem.getElementsByTagName("img")[0];
 
-    if (lazyCnt++ < lazyCntLimit) {
-      imgTagInShuffled.removeAttribute("loading");
-    }
+  //   // if (lazyCnt++ < lazyCntLimit) {
+  //   //   imgTagInShuffled.removeAttribute("loading");
+  //   // }
 
-    if (cur % 6 === 0) {
-      // 6번째마다 긴 사진
-      shuffledItem.className = shuffledItem.className + " tall";
-    }
-    targetContentDiv.appendChild(shuffledItem);
-    cur++;
-  } // end suffle
+  //   if (cur % 6 === 0) {
+  //     // 6번째마다 긴 사진
+  //     shuffledItem.className = shuffledItem.className + " tall";
+  //   }
+  //   targetContentDiv.appendChild(shuffledItem);
+  //   cur++;
+  // } // end suffle
 
   let galleryItems = document.querySelectorAll(".gallery-item");
   let filterBtns = document.querySelectorAll(".filter-btn");
@@ -145,13 +219,13 @@ async function initImageSection() {
 
       const filterValue = btn.getAttribute("data-filter");
 
-      // 
+      //
       /**
        * all 일 경우 랜덤
-       * 특정 년도 선택 시 order by date / 첫 이미지 2개 lazy loading X       *       * 
+       * 특정 년도 선택 시 order by date / 첫 이미지 2개 lazy loading X       *       *
        * 다시 all 선택 시 랜덤 & 2개 lazy loading
-       * 모바일 체크해서 window.innerWidth <= 768; lazy loading 2 / 아닐경우 lazyloading 5번째 부터       * 
-       * 
+       * 모바일 체크해서 window.innerWidth <= 768; lazy loading 2 / 아닐경우 lazyloading 5번째 부터       *
+       *
        */
 
       galleryItems.forEach((item) => {
@@ -205,7 +279,11 @@ async function initImageSection() {
 
     const galleryItems = document.querySelectorAll(".gallery-item");
 
-    lightboxImage.src = img.src;
+    let srcString = img.src;
+    if(!img.src && img.dataset.src){
+      srcString = img.dataset.src;
+    }
+    lightboxImage.src = srcString;
     lightboxImage.alt = img.alt;
     lightboxTitle.textContent = title.textContent;
     lightboxCategory.textContent = category.textContent;
@@ -235,7 +313,7 @@ async function initImageSection() {
 
   nextImage.addEventListener("click", () => {
     currentImageIndex = (currentImageIndex + 1) % visibleImages.length;
-
+    
     openLightbox(visibleImages[currentImageIndex]);
   });
 
@@ -257,8 +335,6 @@ async function initImageSection() {
   updateVisibleImages();
 }
 
-initImageSection();
-
 function isGIF(src) {
   const fileName = src.split("/").pop();
   return fileName.toLowerCase().includes(".gif");
@@ -266,7 +342,6 @@ function isGIF(src) {
 
 // 이미지
 async function readExifFromImg(img_src) {
-  // work
   let alt = "";
   let categoryComment = "";
 
@@ -274,12 +349,11 @@ async function readExifFromImg(img_src) {
     const fileName = img_src.split("/").pop();
     const nameWithoutExt = fileName.replace(/\.[^/.]+$/, "");
     const splitName = nameWithoutExt.split("_");
-    
-    if(splitName.length == 2){    
+
+    if (splitName.length == 2) {
       alt = decodeURIComponent(splitName[0]);
       categoryComment = decodeURIComponent(splitName[1]);
-    }    
-
+    }
   } else {
     const res = await fetch(img_src);
     const blob = await res.blob();
@@ -294,7 +368,7 @@ async function readExifFromImg(img_src) {
       categoryComment = jsonObj.ImageDescription;
     }
   }
-  
+
   return {
     title: alt,
     textContent: categoryComment,
@@ -367,3 +441,26 @@ audioPlayBtn.addEventListener("click", () => {
     mainAudio.pause();
   }
 });
+
+
+
+
+
+// 모듈 구역 ////////////////////
+//  확장자 구하기
+function getExtension(path) {
+  const cleanPath = path.split("?")[0].split("#")[0]; // 쿼리 제거
+  const parts = cleanPath.split(".");
+
+  if (parts.length < 2) return "";
+  return parts.pop().toLowerCase();
+}
+
+// 확장자 변환
+function changeExtSafe(urlString, newExt) {
+  const url = new URL(urlString, window.location.origin);
+  const pathname = url.pathname.replace(/\.[^/.]+$/, "");
+
+  url.pathname = pathname + "." + newExt;
+  return url.toString();
+}

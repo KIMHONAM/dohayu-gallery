@@ -19,3 +19,7 @@ const observer = new IntersectionObserver((entries, obs) => {
 });
 
 images.forEach(img => observer.observe(img));
+
+
+구조를 바꾸자
+json 읽고, 파일 for문으로 가져오지 말고 

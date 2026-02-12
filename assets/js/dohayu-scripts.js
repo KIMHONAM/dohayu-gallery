@@ -20,249 +20,285 @@ const jsonFilePath = "/assets/json/photo_arg.json";
 function isDohaMethod() {
   return who === "doha" ? true : false;
 }
-// set photo data from json file
-fetch(jsonFilePath)
-  .then((res) => res.json())
-  .then((data) => {
-    // top 배너 부분 처리
-    const topBanner = document.getElementById("topBannerId");
-    const spanSection = topBanner.getElementsByTagName("span")[0];
-    spanSection.textContent = titleContent;
 
-    const pSection = topBanner.getElementsByTagName("p")[0];
-    pSection.textContent = comment;
+async function initImageSection() {
+  const res = await fetch(jsonFilePath);
+  const data = await res.json();
 
-    // top 배너 백그라운드 이미지 처리
-    const home = document.getElementById("home");
-    const topDiv = document.createElement("div");
-    topDiv.className = isDohaMethod() ? "hero-dh-bg" : "hero-dy-bg";
-    home.prepend(topDiv);
-    home.prepend(topDiv.cloneNode(true));
-    home.prepend(topDiv.cloneNode(true));
+  // top 배너 부분 처리
+  const topBanner = document.getElementById("topBannerId");
+  const spanSection = topBanner.getElementsByTagName("span")[0];
+  spanSection.textContent = titleContent;
 
-    // 오디오 처리
-    const audioTag = document.getElementById("mainAudio");
-    audioTag.src = isDohaMethod()
-      ? "./assets/audio/Is it still beautiful.mp3"
-      : "./assets/audio/the_wind_is_blowing.mp3";
+  const pSection = topBanner.getElementsByTagName("p")[0];
+  pSection.textContent = comment;
 
-    let dohaBirth = data.dohaBirth;
-    let doyuBirth = data.doyuBirth;
-    let photoPath = data.photoPath;
+  // top 배너 백그라운드 이미지 처리
+  const home = document.getElementById("home");
+  const topDiv = document.createElement("div");
+  topDiv.className = isDohaMethod() ? "hero-dh-bg" : "hero-dy-bg";
+  home.prepend(topDiv);
+  home.prepend(topDiv.cloneNode(true));
+  home.prepend(topDiv.cloneNode(true));
 
-    let isDoha = who === "doha" ? true : false;
+  // 오디오 처리
+  const audioTag = document.getElementById("mainAudio");
+  audioTag.src = isDohaMethod()
+    ? "./assets/audio/Is it still beautiful.mp3"
+    : "./assets/audio/the_wind_is_blowing.mp3";
 
-    let sonBirthDiff = isDoha
-      ? currentYear - dohaBirth
-      : currentYear - doyuBirth;
-    let sonBirth = isDoha ? Number(dohaBirth) : Number(doyuBirth);
+  let dohaBirth = data.dohaBirth;
+  let doyuBirth = data.doyuBirth;
+  let photoPath = data.photoPath;
 
-    let targetBtn = document.getElementById("yearBtn");
-    let imgDivTagArray = [];
-    let targetContentDiv = document.getElementById("galleryGrid");
-    let contentArr = [];
+  let isDoha = who === "doha" ? true : false;
 
-    for (let i = 0; i <= sonBirthDiff; i++) {
-      // create year button section
-      let yearBtn = document.createElement("button");
-      let nowYear = sonBirth + i;
-      yearBtn.dataset.filter = nowYear;
-      yearBtn.className = "filter-btn";
-      yearBtn.id = nowYear + "Btn";
-      yearBtn.textContent = nowYear;
-      targetBtn.after(yearBtn);
-      targetBtn = yearBtn;
-    }
+  let sonBirthDiff = isDoha ? currentYear - dohaBirth : currentYear - doyuBirth;
+  let sonBirth = isDoha ? Number(dohaBirth) : Number(doyuBirth);
 
-    // json에 담긴 사진 년/파일명 만큼  div 태그 구역 생성
-    for (const item of isDoha ? data.dohaPhotoArg : data.doyuPhotoArg) {
-      for (const fileName of item.photos) {
-        let contentDiv = document.createElement("div");
-        contentDiv.className = "gallery-item";
-        contentDiv.dataset.category = item.year + "";
+  let targetBtn = document.getElementById("yearBtn");
+  let imgDivTagArray = [];
+  let targetContentDiv = document.getElementById("galleryGrid");
+  let contentArr = [];
 
-        let imgTag = document.createElement("img");
-        imgTag.src = photoPath + item.year + "/" + fileName;
-        imgTag.loading = "lazy";
+  for (let i = 0; i <= sonBirthDiff; i++) {
+    // create year button section
+    let yearBtn = document.createElement("button");
+    let nowYear = sonBirth + i;
+    yearBtn.dataset.filter = nowYear;
+    yearBtn.className = "filter-btn";
+    yearBtn.id = nowYear + "Btn";
+    yearBtn.textContent = nowYear;
+    targetBtn.after(yearBtn);
+    targetBtn = yearBtn;
+  }
 
-        let overLayDiv = document.createElement("div");
-        overLayDiv.className = "gallery-overlay";
+  // json에 담긴 사진 년/파일명 만큼  div 태그 구역 생성
+  for (const item of isDoha ? data.dohaPhotoArg : data.doyuPhotoArg) {
+    for (const fileName of item.photos) {
+      let contentDiv = document.createElement("div");
+      contentDiv.className = "gallery-item";
+      contentDiv.dataset.category = item.year + "";
 
-        let overlayH3Tag = document.createElement("h3");
-        overlayH3Tag.className = "gallery-title";
+      let imgTag = document.createElement("img");
+      imgTag.src = photoPath + item.year + "/" + fileName;
+      imgTag.loading = "lazy";
 
-        let overlayPTag = document.createElement("p");
-        overlayPTag.className = "gallery-category";
+      let overLayDiv = document.createElement("div");
+      overLayDiv.className = "gallery-overlay";
 
-        // 사진 속성 일기
-        readExifFromImg(imgTag.src, overlayH3Tag, overlayPTag, imgTag);
+      let overlayH3Tag = document.createElement("h3");
+      overlayH3Tag.className = "gallery-title";
 
-        overLayDiv.appendChild(overlayH3Tag);
-        overLayDiv.appendChild(overlayPTag);
+      let overlayPTag = document.createElement("p");
+      overlayPTag.className = "gallery-category";
 
-        contentDiv.appendChild(imgTag);
-        contentDiv.appendChild(overLayDiv);
-
-        contentArr.push(contentDiv);
-      }
-    }
-
-    let shuffled = shuffleArray(contentArr);
-    let cur = 0;
-    let lazyCnt = 0;
-    
-    for (const shuffledItem of shuffled) {
-      // 6번째까지만 초기 로딩 이후 lazy loading
-      const lazyCntLimit = 6;
-      const imgTagInShuffled = shuffledItem.getElementsByTagName("img")[0];
-      
-      if(lazyCnt++ < lazyCntLimit){
-         imgTagInShuffled.removeAttribute("loading");
-      }
-
-      if (cur % 6 === 0) { // 6번째마다 긴 사진
-        shuffledItem.className = shuffledItem.className + " tall";
-      }
-      targetContentDiv.appendChild(shuffledItem);
-      cur++;
-    } // end suffle
-
-    let galleryItems = document.querySelectorAll(".gallery-item");
-    let filterBtns = document.querySelectorAll(".filter-btn");  
-
-    filterBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        // Remove active class from all buttons
-        filterBtns.forEach((b) => b.classList.remove("active"));
-        // Add active class to clicked button
-        btn.classList.add("active");
-
-        const filterValue = btn.getAttribute("data-filter");
-
-        galleryItems.forEach((item) => {
-          if (
-            filterValue === "all" ||
-            item.getAttribute("data-category") === filterValue
-          ) {
-            item.style.display = "block";
-            // Re-trigger animation
-            item.style.animation = "none";
-            setTimeout(() => {
-              item.style.animation = "fadeInUp 0.6s ease forwards";
-            }, 10);
-          } else {
-            item.style.display = "none";
-          }
-        });
-      });
-    }); // end of filterBtn forEach
-
-    // Lightbox Functionality
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImage = document.getElementById("lightboxImage");
-    const lightboxTitle = document.getElementById("lightboxTitle");
-    const lightboxCategory = document.getElementById("lightboxCategory");
-    const closeLightbox = document.getElementById("closeLightbox");
-    const prevImage = document.getElementById("prevImage");
-    const nextImage = document.getElementById("nextImage");
-
-    let currentImageIndex = 0;
-    let visibleImages = [];
-
-    function updateVisibleImages() {
-      visibleImages = Array.from(galleryItems).filter(
-        (item) => item.style.display !== "none",
+      // 사진 속성 일기
+      const imgComments = await readExifFromImg(
+        imgTag.src
       );
+
+      overlayH3Tag.textContent = imgComments.title;
+      overlayPTag.textContent = imgComments.textContent;
+      imgTag.alt = imgComments.title;
+
+      overLayDiv.appendChild(overlayH3Tag);
+      overLayDiv.appendChild(overlayPTag);
+
+      contentDiv.appendChild(imgTag);
+      contentDiv.appendChild(overLayDiv);
+
+      contentArr.push(contentDiv);
+    }
+  }
+
+  let shuffled = shuffleArray(contentArr);
+  let cur = 0;
+  let lazyCnt = 0;
+
+  for (const shuffledItem of shuffled) {
+    // 6번째까지만 초기 로딩 이후 lazy loading
+    const lazyCntLimit = 6;
+    const imgTagInShuffled = shuffledItem.getElementsByTagName("img")[0];
+
+    if (lazyCnt++ < lazyCntLimit) {
+      imgTagInShuffled.removeAttribute("loading");
     }
 
-    galleryItems.forEach((item, index) => {
-      item.addEventListener("click", () => {
-        updateVisibleImages();
-        currentImageIndex = visibleImages.indexOf(item);
-        openLightbox(item);
+    if (cur % 6 === 0) {
+      // 6번째마다 긴 사진
+      shuffledItem.className = shuffledItem.className + " tall";
+    }
+    targetContentDiv.appendChild(shuffledItem);
+    cur++;
+  } // end suffle
+
+  let galleryItems = document.querySelectorAll(".gallery-item");
+  let filterBtns = document.querySelectorAll(".filter-btn");
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // Remove active class from all buttons
+      filterBtns.forEach((b) => b.classList.remove("active"));
+      // Add active class to clicked button
+      btn.classList.add("active");
+
+      const filterValue = btn.getAttribute("data-filter");
+
+      // 
+      /**
+       * all 일 경우 랜덤
+       * 특정 년도 선택 시 order by date / 첫 이미지 2개 lazy loading X       *       * 
+       * 다시 all 선택 시 랜덤 & 2개 lazy loading
+       * 모바일 체크해서 window.innerWidth <= 768; lazy loading 2 / 아닐경우 lazyloading 5번째 부터       * 
+       * 
+       */
+
+      galleryItems.forEach((item) => {
+        if (
+          filterValue === "all" ||
+          item.getAttribute("data-category") === filterValue
+        ) {
+          item.style.display = "block";
+          // Re-trigger animation
+          item.style.animation = "none";
+          setTimeout(() => {
+            item.style.animation = "fadeInUp 0.6s ease forwards";
+          }, 10);
+        } else {
+          item.style.display = "none";
+        }
       });
     });
+  }); // end of filterBtn forEach
 
-    function openLightbox(item) {
-      
-      const img = item.querySelector("img");
-      const title = item.querySelector(".gallery-title");
-      const category = item.querySelector(".gallery-category");
+  // Lightbox Functionality
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImage = document.getElementById("lightboxImage");
+  const lightboxTitle = document.getElementById("lightboxTitle");
+  const lightboxCategory = document.getElementById("lightboxCategory");
+  const closeLightbox = document.getElementById("closeLightbox");
+  const prevImage = document.getElementById("prevImage");
+  const nextImage = document.getElementById("nextImage");
 
-      const galleryItems = document.querySelectorAll(".gallery-item");
+  let currentImageIndex = 0;
+  let visibleImages = [];
 
-      lightboxImage.src = img.src;
-      lightboxImage.alt = img.alt;
-      lightboxTitle.textContent = title.textContent;
-      lightboxCategory.textContent = category.textContent;
+  function updateVisibleImages() {
+    visibleImages = Array.from(galleryItems).filter(
+      (item) => item.style.display !== "none",
+    );
+  }
 
-      lightbox.classList.add("active");
-      document.body.style.overflow = "hidden";
-    }
+  galleryItems.forEach((item, index) => {
+    item.addEventListener("click", () => {
+      updateVisibleImages();
+      currentImageIndex = visibleImages.indexOf(item);
+      openLightbox(item);
+    });
+  });
 
-    closeLightbox.addEventListener("click", () => {
+  function openLightbox(item) {
+    const img = item.querySelector("img");
+    const title = item.querySelector(".gallery-title");
+    const category = item.querySelector(".gallery-category");
+
+    const galleryItems = document.querySelectorAll(".gallery-item");
+
+    lightboxImage.src = img.src;
+    lightboxImage.alt = img.alt;
+    lightboxTitle.textContent = title.textContent;
+    lightboxCategory.textContent = category.textContent;
+
+    lightbox.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  closeLightbox.addEventListener("click", () => {
+    lightbox.classList.remove("active");
+    document.body.style.overflow = "auto";
+  });
+
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) {
       lightbox.classList.remove("active");
       document.body.style.overflow = "auto";
-    });
+    }
+  });
 
-    lightbox.addEventListener("click", (e) => {
-      if (e.target === lightbox) {
-        lightbox.classList.remove("active");
-        document.body.style.overflow = "auto";
-      }
-    });
+  prevImage.addEventListener("click", () => {
+    currentImageIndex =
+      (currentImageIndex - 1 + visibleImages.length) % visibleImages.length;
 
-    prevImage.addEventListener("click", () => {
-      
-      currentImageIndex =
-        (currentImageIndex - 1 + visibleImages.length) % visibleImages.length;
-      
-      openLightbox(visibleImages[currentImageIndex]);
-    });
+    openLightbox(visibleImages[currentImageIndex]);
+  });
 
-    nextImage.addEventListener("click", () => {
-      currentImageIndex = (currentImageIndex + 1) % visibleImages.length;
+  nextImage.addEventListener("click", () => {
+    currentImageIndex = (currentImageIndex + 1) % visibleImages.length;
 
-      openLightbox(visibleImages[currentImageIndex]);
-    });
+    openLightbox(visibleImages[currentImageIndex]);
+  });
 
-    // Keyboard navigation
-    document.addEventListener("keydown", (e) => {
-      if (!lightbox.classList.contains("active")) return;
+  // Keyboard navigation
+  document.addEventListener("keydown", (e) => {
+    if (!lightbox.classList.contains("active")) return;
 
-      if (e.key === "Escape") {
-        lightbox.classList.remove("active");
-        document.body.style.overflow = "auto";
-      } else if (e.key === "ArrowLeft") {
-        prevImage.click();
-      } else if (e.key === "ArrowRight") {
-        nextImage.click();
-      }
-    });
+    if (e.key === "Escape") {
+      lightbox.classList.remove("active");
+      document.body.style.overflow = "auto";
+    } else if (e.key === "ArrowLeft") {
+      prevImage.click();
+    } else if (e.key === "ArrowRight") {
+      nextImage.click();
+    }
+  });
 
-    // Initialize visible images
-    updateVisibleImages();
-  }); // 끝 이미지
+  // Initialize visible images
+  updateVisibleImages();
+}
+
+initImageSection();
+
+function isGIF(src) {
+  const fileName = src.split("/").pop();
+  return fileName.toLowerCase().includes(".gif");
+}
 
 // 이미지
-async function readExifFromImg(img_src, overlayH3Tag, overlayPTag, imgTag) {
-  const res = await fetch(img_src);
-  const blob = await res.blob();
-
-  const exif = await exifr.parse(blob);
-
-  const textResult = decodeURIComponent(JSON.stringify(exif, null, 2));
+async function readExifFromImg(img_src) {
+  // work
   let alt = "";
   let categoryComment = "";
 
-  if (isJsonStr(textResult)) {
-    const jsonObj = JSON.parse(textResult);
-    alt = jsonObj.Artist;
-    categoryComment = jsonObj.ImageDescription;
+  if (isGIF(img_src)) {
+    const fileName = img_src.split("/").pop();
+    const nameWithoutExt = fileName.replace(/\.[^/.]+$/, "");
+    const splitName = nameWithoutExt.split("_");
+    
+    if(splitName.length == 2){    
+      alt = decodeURIComponent(splitName[0]);
+      categoryComment = decodeURIComponent(splitName[1]);
+    }    
+
+  } else {
+    const res = await fetch(img_src);
+    const blob = await res.blob();
+
+    const exif = await exifr.parse(blob);
+
+    const textResult = decodeURIComponent(JSON.stringify(exif, null, 2));
+
+    if (isJsonStr(textResult)) {
+      const jsonObj = JSON.parse(textResult);
+      alt = jsonObj.Artist;
+      categoryComment = jsonObj.ImageDescription;
+    }
   }
-  overlayH3Tag.textContent = alt;
-  overlayPTag.textContent = categoryComment;
-  imgTag.alt = alt;
+  
+  return {
+    title: alt,
+    textContent: categoryComment,
+  };
 }
 
 function shuffleArray(arr) {

@@ -66,7 +66,12 @@ Dohayu Gallery
         <button class="lightbox-nav lightbox-prev" id="prevImage">‹</button>
         <button class="lightbox-nav lightbox-next" id="nextImage">›</button>
         <div class="lightbox-content">
-            <img src="" alt="" id="lightboxImage">
+            <picture>
+                <source type="image/avif" class="lightboxSources">
+                <source type="image/webp" class="lightboxSources">
+                <img src="./assets/photos/spinner.gif" alt="" id="lightboxImage">
+            </picture>
+            
             <div class="lightbox-info">
                 <h3 id="lightboxTitle"></h3>
                 <p id="lightboxCategory"></p>

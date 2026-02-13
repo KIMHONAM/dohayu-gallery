@@ -213,25 +213,25 @@ nav {
 
 .hero-dy-bg:nth-child(1) {
 	background-image: url('../photos/doyu/main/doyu_1.jpg');
-	background-image: image-set(url("../photos/doha/main/doyu_1.avif") type("image/avif"),
-			url("../photos/doha/main/doyu_1.webp") type("image/webp"),
-			url("../photos/doha/main/doyu_1.jpg") type("image/jpeg"));
+	background-image: image-set(url("../photos/doyu/main/doyu_1.avif") type("image/avif"),
+			url("../photos/doyu/main/doyu_1.webp") type("image/webp"),
+			url("../photos/doyu/main/doyu_1.jpg") type("image/jpeg"));
 	animation-delay: 0s;
 }
 
 .hero-dy-bg:nth-child(2) {
 	background-image: url('../photos/doyu/main/doyu_2.jpg');
-	background-image: image-set(url("../photos/doha/main/doyu_2.avif") type("image/avif"),
-			url("../photos/doha/main/doyu_2.webp") type("image/webp"),
-			url("../photos/doha/main/doyu_2.jpg") type("image/jpeg"));
+	background-image: image-set(url("../photos/doyu/main/doyu_2.avif") type("image/avif"),
+			url("../photos/doyu/main/doyu_2.webp") type("image/webp"),
+			url("../photos/doyu/main/doyu_2.jpg") type("image/jpeg"));
 	animation-delay: 3s;
 }
 
 .hero-dy-bg:nth-child(3) {
 	background-image: url('../photos/doyu/main/doyu_4.jpg');
-	background-image: image-set(url("../photos/doha/main/doyu_4.avif") type("image/avif"),
-			url("../photos/doha/main/doyu_4.webp") type("image/webp"),
-			url("../photos/doha/main/doyu_4.jpg") type("image/jpeg"));
+	background-image: image-set(url("../photos/doyu/main/doyu_4.avif") type("image/avif"),
+			url("../photos/doyu/main/doyu_4.webp") type("image/webp"),
+			url("../photos/doyu/main/doyu_4.jpg") type("image/jpeg"));
 	animation-delay: 6s;
 }
 
@@ -529,6 +529,7 @@ nav {
 	max-width: 100%;
 	max-height: 70vh;
 	display: block;
+	text-align: center;
 	box-shadow: 0 20px 60px rgba(123, 168, 189, 0.2);
 }
 

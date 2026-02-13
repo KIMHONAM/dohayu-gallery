@@ -24,7 +24,6 @@ function isDohaMethod() {
 
 // work ---- 스크롤 범위만 요청
 document.addEventListener("DOMContentLoaded", async function () {
-
   await initImageSection();
 
   const images = document.querySelectorAll(".gallery-item img");
@@ -34,7 +33,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   const eagerCount = isMobile ? 2 : 6;
   // 1️⃣ IntersectionObserver 설정
   const pictures = document.querySelectorAll(".lazy-picture");
-  
 
   const observer = new IntersectionObserver(
     (entries, obs) => {
@@ -57,12 +55,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       observer.observe(picture);
     }
   });
-  
+
   function loadPicture(picture) {
-    
     const sources = picture.querySelectorAll("source");
     const img = picture.querySelector("img");
-    
 
     sources.forEach((source) => {
       source.srcset = source.dataset.srcset;
@@ -74,7 +70,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       img.classList.add("loaded");
     };
   }
-
 });
 
 async function initImageSection() {
@@ -103,11 +98,10 @@ async function initImageSection() {
     ? "./assets/audio/Is it still beautiful.mp3"
     : "./assets/audio/the_wind_is_blowing.mp3";
 
+  let isDoha = who === "doha" ? true : false;
   let dohaBirth = data.dohaBirth;
   let doyuBirth = data.doyuBirth;
-  let photoPath = data.photoPath;
-
-  let isDoha = who === "doha" ? true : false;
+  let photoPath = data.photoPath + (isDoha ? "doha" : "doyu") + "/contents/";
 
   let sonBirthDiff = isDoha ? currentYear - dohaBirth : currentYear - doyuBirth;
   let sonBirth = isDoha ? Number(dohaBirth) : Number(doyuBirth);
@@ -171,7 +165,9 @@ async function initImageSection() {
       overlayH3Tag.textContent = fileInfo.title;
       overlayPTag.textContent = fileInfo.date + " / " + fileInfo.place;
       imgTag.alt = fileInfo.title;
-      if (tallCnt++ % 6 === 0) {imgTag.className = imgTag.className + " tall";}
+      if (tallCnt++ % 6 === 0) {
+        imgTag.className = imgTag.className + " tall";
+      }
 
       pictureTag.appendChild(imgTag);
 
@@ -268,7 +264,8 @@ async function initImageSection() {
     item.addEventListener("click", () => {
       updateVisibleImages();
       currentImageIndex = visibleImages.indexOf(item);
-      openLightbox(item);
+      openLightboxWithPicture(item);
+      // work picture로 변경
     });
   });
 
@@ -280,15 +277,17 @@ async function initImageSection() {
     const galleryItems = document.querySelectorAll(".gallery-item");
 
     let srcString = img.src;
-    if(!img.src && img.dataset.src){
+    if (!img.src && img.dataset.src) {
       srcString = img.dataset.src;
     }
+
     lightboxImage.src = srcString;
     lightboxImage.alt = img.alt;
     lightboxTitle.textContent = title.textContent;
     lightboxCategory.textContent = category.textContent;
 
     lightbox.classList.add("active");
+
     document.body.style.overflow = "hidden";
   }
 
@@ -297,24 +296,24 @@ async function initImageSection() {
     document.body.style.overflow = "auto";
   });
 
-  lightbox.addEventListener("click", (e) => {
-    if (e.target === lightbox) {
-      lightbox.classList.remove("active");
-      document.body.style.overflow = "auto";
-    }
-  });
+  // lightbox.addEventListener("click", (e) => {
+  //   if (e.target === lightbox) {
+  //     lightbox.classList.remove("active");
+  //     document.body.style.overflow = "auto";
+  //   }
+  // });
 
   prevImage.addEventListener("click", () => {
     currentImageIndex =
       (currentImageIndex - 1 + visibleImages.length) % visibleImages.length;
 
-    openLightbox(visibleImages[currentImageIndex]);
+    openLightboxWithPicture(visibleImages[currentImageIndex]);
   });
 
   nextImage.addEventListener("click", () => {
     currentImageIndex = (currentImageIndex + 1) % visibleImages.length;
-    
-    openLightbox(visibleImages[currentImageIndex]);
+
+    openLightboxWithPicture(visibleImages[currentImageIndex]);
   });
 
   // Keyboard navigation
@@ -442,10 +441,6 @@ audioPlayBtn.addEventListener("click", () => {
   }
 });
 
-
-
-
-
 // 모듈 구역 ////////////////////
 //  확장자 구하기
 function getExtension(path) {
@@ -463,4 +458,36 @@ function changeExtSafe(urlString, newExt) {
 
   url.pathname = pathname + "." + newExt;
   return url.toString();
+}
+
+function openLightboxWithPicture(item) {
+  const picture = item.querySelector("picture");
+  const img = picture.querySelector("img");
+  const title = item.querySelector(".gallery-title");
+  const category = item.querySelector(".gallery-category");
+  const sources = picture.querySelectorAll("source");
+  const lightboxSources = document.getElementsByClassName("lightboxSources");
+
+  let srcString = img.src;
+  if (!img.src && img.dataset.src) {
+    srcString = img.dataset.src;
+  }
+
+  lightboxImage.alt = img.alt;
+  lightboxTitle.textContent = title.textContent;
+  lightboxCategory.textContent = category.textContent;
+
+  sources.forEach((source) => {
+    // source.srcset = source.dataset.srcset;
+    lightboxSources.srcset = source.dataset.srcset;
+  });
+  lightboxImage.src = "./assets/photos/spinner.gif";
+  const tempImg = new Image();
+  tempImg.src = srcString;
+  tempImg.onload = () => {
+    lightboxImage.src = srcString;
+  };
+
+  lightbox.classList.add("active");
+  document.body.style.overflow = "hidden";
 }

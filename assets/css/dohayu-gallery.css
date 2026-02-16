@@ -461,7 +461,7 @@ nav {
 	transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.gallery-item:hover .gallery-overlay {
+.gallery-item .gallery-overlay {
 	transform: translateY(0);
 }
 

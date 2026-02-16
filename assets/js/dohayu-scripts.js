@@ -95,8 +95,8 @@ async function initImageSection() {
   // 오디오 처리
   const audioTag = document.getElementById("mainAudio");
   audioTag.src = isDohaMethod()
-    ? "./assets/audio/Is it still beautiful.mp3"
-    : "./assets/audio/the_wind_is_blowing.mp3";
+    ? "./assets/audio/beautiful_days.mp3"
+    : "./assets/audio/How_can_I_not_love_you.mp3";
 
   let isDoha = who === "doha" ? true : false;
   let dohaBirth = data.dohaBirth;

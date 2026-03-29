@@ -72,6 +72,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 });
 
+// 사진 구역 처리
 async function initImageSection() {
   const res = await fetch(jsonFilePath);
   const data = await res.json();
@@ -162,9 +163,9 @@ async function initImageSection() {
       let overlayPTag = document.createElement("p");
       overlayPTag.className = "gallery-category";
 
-      overlayH3Tag.textContent = fileInfo.title;
-      overlayPTag.textContent = fileInfo.date + " / " + fileInfo.place;
-      imgTag.alt = fileInfo.title;
+      overlayH3Tag.textContent = normalizeUndefined(fileInfo.title);
+      overlayPTag.textContent = normalizeUndefined(fileInfo.date) + " / " + normalizeUndefined(fileInfo.place);
+      imgTag.alt = normalizeUndefined(fileInfo.title);
       if (tallCnt++ % 6 === 0) {
         imgTag.className = imgTag.className + " tall";
       }
@@ -177,7 +178,6 @@ async function initImageSection() {
       contentDiv.appendChild(pictureTag);
       contentDiv.appendChild(overLayDiv);
 
-      // contentArr.push(contentDiv);
       targetContentDiv.appendChild(contentDiv);
     }
   }
@@ -282,9 +282,9 @@ async function initImageSection() {
     }
 
     lightboxImage.src = srcString;
-    lightboxImage.alt = img.alt;
-    lightboxTitle.textContent = title.textContent;
-    lightboxCategory.textContent = category.textContent;
+    lightboxImage.alt = normalizeUndefined(img.alt);
+    lightboxTitle.textContent = normalizeUndefined(title.textContent);
+    lightboxCategory.textContent = normalizeUndefined(category.textContent);
 
     lightbox.classList.add("active");
 
@@ -490,4 +490,10 @@ function openLightboxWithPicture(item) {
 
   lightbox.classList.add("active");
   document.body.style.overflow = "hidden";
+}
+
+function normalizeUndefined(val) {
+  return (val === "undefined" || typeof val === "undefined")
+    ? ""
+    : val;
 }

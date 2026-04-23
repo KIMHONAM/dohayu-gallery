@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   // 📱 모바일 기준 판별
   const isMobile = window.innerWidth <= 768;
   // 첫 화면 eager 개수
-  const eagerCount = isMobile ? 2 : 6;
+  const eagerCount = isMobile ? 1 : 3;
   // 1️⃣ IntersectionObserver 설정
   const pictures = document.querySelectorAll(".lazy-picture");
 
@@ -44,7 +44,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       });
     },
     {
-      rootMargin: "300px",
+      rootMargin: "80px",   // preload 80 전까지만 - 초기 이미지 로딩 갯수 조절 
+      threshold: 0.15, // 이미지 15% 들어와야 로딩
     },
   );
 

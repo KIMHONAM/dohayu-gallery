@@ -18,10 +18,6 @@ const titleContent = isDoha ? "도하의 기억" : "도유의 기억";
 const jsonFilePath = "/assets/json/photo_arg.json";
 const isMobile = window.innerWidth <= 768;
 
-function isDohaMethod() {
-  return who === "doha" ? true : false;
-}
-
 // work ---- 스크롤 범위만 요청
 document.addEventListener("DOMContentLoaded", async function () {
   await initImageSection();
@@ -44,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       });
     },
     {
-      rootMargin: "80px",   // preload 80 전까지만 - 초기 이미지 로딩 갯수 조절 
+      rootMargin: "80px", // preload 80 전까지만 - 초기 이미지 로딩 갯수 조절
       threshold: 0.15, // 이미지 15% 들어와야 로딩
     },
   );
@@ -89,18 +85,12 @@ async function initImageSection() {
   // top 배너 백그라운드 이미지 처리
   const home = document.getElementById("home");
   const topDiv = document.createElement("div");
-  topDiv.className = isDohaMethod() ? "hero-dh-bg" : "hero-dy-bg";
+  topDiv.className = isDoha ? "hero-dh-bg" : "hero-dy-bg";
   home.prepend(topDiv);
   home.prepend(topDiv.cloneNode(true));
   home.prepend(topDiv.cloneNode(true));
-
-  // 오디오 처리
-  const audioTag = document.getElementById("mainAudio");
-  audioTag.src = isDohaMethod()
-    ? "./assets/audio/beautiful_days.mp3"
-    : "./assets/audio/How_can_I_not_love_you.mp3";
-
-  let isDoha = who === "doha" ? true : false;
+ 
+  
   let dohaBirth = data.dohaBirth;
   let doyuBirth = data.doyuBirth;
   let photoPath = data.photoPath + (isDoha ? "doha" : "doyu") + "/contents/";
@@ -165,7 +155,10 @@ async function initImageSection() {
       overlayPTag.className = "gallery-category";
 
       overlayH3Tag.textContent = normalizeUndefined(fileInfo.title);
-      overlayPTag.textContent = normalizeUndefined(fileInfo.date) + " / " + normalizeUndefined(fileInfo.place);
+      overlayPTag.textContent =
+        normalizeUndefined(fileInfo.date) +
+        " / " +
+        normalizeUndefined(fileInfo.place);
       imgTag.alt = normalizeUndefined(fileInfo.title);
       if (tallCnt++ % 6 === 0) {
         imgTag.className = imgTag.className + " tall";
@@ -429,18 +422,62 @@ setActiveLink(); // Set initial active state
 
 // Filter Functionality
 
-// doha doyu audio play
+// doha doyu audio play  --- 도하유 음악 재생 구역
 const audioPlayBtn = document.getElementById("audioPlaBtn");
-const mainAudio = document.getElementById("mainAudio");
+const player = document.getElementById("mainAudio");
 
-audioPlayBtn.addEventListener("click", () => {
-  if (mainAudio.paused) {
-    mainAudio.currentTime = 0;
-    mainAudio.play();
-  } else {
-    mainAudio.pause();
+const dohaTracks = [
+  "./assets/audio/you_and_me.mp3",
+  "./assets/audio/beautiful_days.mp3",
+];
+
+const doyuTracks = [
+  "./assets/audio/you.mp3",
+  "./assets/audio/How_can_I_not_love_you.mp3",
+];
+
+// 어떤 트랙 쓸지 결정
+const tracks = isDoha ? dohaTracks : doyuTracks;
+
+let current = 0;
+let started = false;
+
+// ▶ 트랙 재생
+function playTrack(index) {
+  if (index >= tracks.length) return;
+
+  player.src = tracks[index];
+
+  player.play().catch((err) => {
+    console.log("재생 실패:", err);
+  });
+}
+
+// ▶ 다음곡 자동 재생
+player.addEventListener("ended", () => {
+  current++;
+
+  if (!(current < tracks.length)) {
+    current = 0;       
   }
+  playTrack(current);
 });
+
+function togglePlay() {
+  if (!started) {
+    playTrack(current);
+    started = true;
+    return;
+  }
+
+  if (player.paused) {
+    player.play();
+  } else {
+    player.pause();
+  }
+}
+
+document.getElementById("audioPlaBtn").addEventListener("click", togglePlay);
 
 // 모듈 구역 ////////////////////
 //  확장자 구하기
@@ -494,7 +531,5 @@ function openLightboxWithPicture(item) {
 }
 
 function normalizeUndefined(val) {
-  return (val === "undefined" || typeof val === "undefined")
-    ? ""
-    : val;
+  return val === "undefined" || typeof val === "undefined" ? "" : val;
 }

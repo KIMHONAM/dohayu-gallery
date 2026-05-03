@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const eagerCount = isMobile ? 1 : 3;
   // 1️⃣ IntersectionObserver 설정
   const pictures = document.querySelectorAll(".lazy-picture");
+  const rootMargin = isMobile ? "250px" : "150px";
 
   const observer = new IntersectionObserver(
     (entries, obs) => {
@@ -40,8 +41,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       });
     },
     {
-      rootMargin: "80px", // preload 80 전까지만 - 초기 이미지 로딩 갯수 조절
-      threshold: 0.15, // 이미지 15% 들어와야 로딩
+      rootMargin: rootMargin, // preload 80 전까지만 - 초기 이미지 로딩 갯수 조절
+      threshold: 0.1, // 이미지 10% 들어와야 로딩
     },
   );
 
@@ -89,8 +90,7 @@ async function initImageSection() {
   home.prepend(topDiv);
   home.prepend(topDiv.cloneNode(true));
   home.prepend(topDiv.cloneNode(true));
- 
-  
+
   let dohaBirth = data.dohaBirth;
   let doyuBirth = data.doyuBirth;
   let photoPath = data.photoPath + (isDoha ? "doha" : "doyu") + "/contents/";
@@ -426,14 +426,14 @@ setActiveLink(); // Set initial active state
 const audioPlayBtn = document.getElementById("audioPlaBtn");
 const player = document.getElementById("mainAudio");
 
-const dohaTracks = [
-  "./assets/audio/you_and_me.mp3",
+const dohaTracks = [  
   "./assets/audio/beautiful_days.mp3",
+  "./assets/audio/you_and_me.mp3"
 ];
 
-const doyuTracks = [
-  "./assets/audio/you.mp3",
+const doyuTracks = [  
   "./assets/audio/How_can_I_not_love_you.mp3",
+  "./assets/audio/you.mp3"
 ];
 
 // 어떤 트랙 쓸지 결정
@@ -458,7 +458,7 @@ player.addEventListener("ended", () => {
   current++;
 
   if (!(current < tracks.length)) {
-    current = 0;       
+    current = 0;
   }
   playTrack(current);
 });

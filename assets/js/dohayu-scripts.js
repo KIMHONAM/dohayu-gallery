@@ -11,12 +11,19 @@ const navBox = document.getElementById("nav-container");
 const currentYear = new Date().getFullYear();
 const params = new URLSearchParams(window.location.search);
 const who = params.get("who");
+const isFamily = who === "family";
 const isDoha = who === "doha" ? true : false;
 const comment = isDoha ? "사랑이 자라던 시간" : "너로 인해 따뜻해진 날들";
-const titleContent = isDoha ? "도하의 기억" : "도유의 기억";
+const titleContent =  isFamily ? "우리의 기억" : (isDoha ? "도하의 기억" : "도유의 기억");
 
 const jsonFilePath = "/assets/json/photo_arg.json";
 const isMobile = window.innerWidth <= 768;
+
+if (who === "family") {
+    document.getElementById("logoIcon").style.display = "none";
+    document.getElementById("mapOpenButton").classList.remove("hidden");
+    document.getElementById("logo").classList.add("family-mode");    
+}
 
 // work ---- 스크롤 범위만 요청
 document.addEventListener("DOMContentLoaded", async function () {
@@ -86,7 +93,7 @@ async function initImageSection() {
   // top 배너 백그라운드 이미지 처리
   const home = document.getElementById("home");
   const topDiv = document.createElement("div");
-  topDiv.className = isDoha ? "hero-dh-bg" : "hero-dy-bg";
+  topDiv.className = isDoha ? "hero-dh-bg" : "hero-dy-bg";  // TODO 가족 배경
   home.prepend(topDiv);
   home.prepend(topDiv.cloneNode(true));
   home.prepend(topDiv.cloneNode(true));
@@ -116,6 +123,7 @@ async function initImageSection() {
   }
 
   // json에 담긴 사진 년/파일명 만큼  div 태그 구역 생성
+  //TODO ::  if family -> data.dohaPhotoArg merge doyuPhotoArg 
   for (const item of isDoha ? data.dohaPhotoArg : data.doyuPhotoArg) {
     let tallCnt = 0;
     for (const fileInfo of item.photos) {
@@ -126,7 +134,7 @@ async function initImageSection() {
       // work - image/avif 파일 추가
 
       let imgTag = document.createElement("img");
-      const photoFullPath = photoPath + item.year + "/" + fileInfo.fileName;
+      const photoFullPath = photoPath + item.year + "/" + fileInfo.fileName;  // TODO :: photoPath 수정해야함 json에 
       const avifPath = changeExtSafe(photoFullPath, "avif");
       const webpPath = changeExtSafe(photoFullPath, "webp");
 

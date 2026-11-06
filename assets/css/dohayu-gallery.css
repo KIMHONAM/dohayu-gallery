@@ -48,6 +48,10 @@ body {
 	min-height: -webkit-fill-available;
 }
 
+.hidden {
+	display: none !important;
+}
+
 /* Navigation */
 nav {
 	position: fixed;
@@ -67,6 +71,8 @@ nav {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	position: relative;
+	width: 100%;
 }
 
 .logo {
@@ -76,11 +82,22 @@ nav {
 	font-weight: 600;
 	letter-spacing: 2px;
 	color: var(--color-slate);
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	gap: 0.8rem;
 	text-decoration: none;
 	transition: color 0.3s ease;
+
+}
+
+.logo.family-mode::before {
+    content: "";
+    display: block;
+
+    width: 24px;
+    height: 24px;
+
+    background: url('/assets/css/images/10th-anniversary.png') center / contain no-repeat;
 }
 
 .logo:hover {
@@ -841,6 +858,8 @@ footer a:hover {
 	height: 2rem;
 	display: none;
 	background: url("images/topArrow.png");
+	margin-left: auto;
+    flex-shrink: 0;
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;

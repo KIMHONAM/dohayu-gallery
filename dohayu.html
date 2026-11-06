@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/dohayu-gallery.css">
+    <link rel="stylesheet" href="./assets/css/map-modal.css">
     <!--
 
 Dohayu Gallery
@@ -23,13 +24,16 @@ Dohayu Gallery
     <!-- Navigation -->
     <nav>
         <div class="nav-container" id="nav-container">
-            <a href="index.html" class="logo">
-                <svg class="logo-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <image href="./assets/css/images/icons8-movie.gif" x="0" y="0" width="100%" height="100%" />
-                </svg>
-                DOHA•DOYU
-            </a>
-            <button class="top-arrow-btn" id="topBtn" onclick="goTop()"></button>
+        </div>
+        <a href="index.html" class="logo" id="logo">
+            <svg class="logo-icon" id="logoIcon" viewBox="0 0 40 40" fill="none" stroke="currentColor"
+                stroke-width="1.5">
+                <image id="top_banner_icon" href="./assets/css/images/icons8-movie.gif" x="0" y="0" width="100%"
+                    height="100%" />
+            </svg>
+            DOHA•DOYU
+        </a>
+        <button class="top-arrow-btn" id="topBtn" onclick="goTop()"></button>
         </div>
     </nav>
 
@@ -55,8 +59,8 @@ Dohayu Gallery
 
     <!-- Gallery Section -->
     <section class="gallery-container" id="gallery">
-        <div class="gallery-grid" id="galleryGrid">            
-            
+        <div class="gallery-grid" id="galleryGrid">
+
         </div>
     </section>
 
@@ -71,7 +75,7 @@ Dohayu Gallery
                 <source type="image/webp" class="lightboxSources">
                 <img src="./assets/photos/spinner.gif" alt="" id="lightboxImage">
             </picture>
-            
+
             <div class="lightbox-info">
                 <h3 id="lightboxTitle"></h3>
                 <p id="lightboxCategory"></p>
@@ -79,14 +83,34 @@ Dohayu Gallery
         </div>
     </div>
 
+    <!-- ========================= OPEN BUTTON ========================= -->
+    <button id="mapOpenButton">
+        <img src="/assets/css/images/map.png" />
+    </button>
+
+    <!-- ========================= BACKDROP ========================= -->
+    <div id="mapBackdrop"></div>
+
+    <!-- =========================MAP MODAL========================= -->
+    <div id="mapModal">
+        <button id="mapCloseButton">
+            ✕
+        </button>
+        <div id="mapContainer">
+            <iframe id="mapFrame" src="" title="사진 지도">
+            </iframe>
+
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
         <p>© 2026 Dohayu Gallery</a></p>
     </footer>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
-    <script src="./assets/js/dohayu-scripts.js" ></script>
+    <script src="./assets/js/dohayu-scripts.js"></script>
+    <script src="./assets/js/map-modal.js"></script>
 </body>
 
 </html>

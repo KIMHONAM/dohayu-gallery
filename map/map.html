@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>MapLibre 한국 지도</title>
+
+  <link href="../assets/css/maplibre/maplibre-gl.css" rel="stylesheet" />
+  <script src="../map/maplibre_js/turf.min.js"></script>
+  <script src="../map/maplibre_js/maplibre-gl.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .custom-ui {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .custom-ui button {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+
+      background: white;
+      font-size: 16px;
+
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .custom-ui button:hover {
+      background: #f1f1f1;
+    }
+
+    .reset-btn {
+      width: 34px;
+      height: 34px;      
+      background-color: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    .reset-btn:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="map"></div>
+
+  <script>
+
+    const isMobile =
+      window.innerWidth <= 768;
+
+    class ResetControl {
+      onAdd(map) {
+        this.map = map;
+
+        this.container = document.createElement('button');
+        this.container.className = 'maplibregl-ctrl reset-btn';
+        this.container.textContent = '⟳';
+
+        this.container.onclick = () => {
+          map.flyTo({
+            center: isMobile
+              ? [137, 27.7]
+              : [133, 28],
+
+
+            zoom: isMobile ? 3 : 4.6,
+            duration: 800
+          });
+        };
+
+        return this.container;
+      }
+
+      onRemove() {
+        this.container.parentNode.removeChild(this.container);
+        this.map = undefined;
+      }
+    }
+
+
+    //랜덤 핀 
+    const randomPins = {
+      type: 'FeatureCollection',
+      features: Array.from({ length: 6 }, () => ({
+        type: 'Feature',
+
+        geometry: {
+          type: 'Point',
+
+          // 한국 근처 랜덤 좌표
+          coordinates: [
+            126 + Math.random() * 3, // longitude
+            35 + Math.random() * 3   // latitude
+          ]
+        },
+
+        properties: {
+          name: 'Random Pin'
+        }
+      }))
+    }
+
+    // 초기 위치 및 맵 생성
+    const map = new maplibregl.Map({
+
+      container: 'map',
+
+      style:
+        '/assets/geojson/map.json',
+
+      center: isMobile
+        ? [137, 27.7]
+        : [133, 28],
+
+
+      zoom: isMobile ? 3 : 4.6
+
+    });
+
+    map.on('click', (e) => {
+    const features = map.queryRenderedFeatures(e.point);
+
+    features.forEach(feature => {
+        if (feature.layer.id === 'countries-label') {
+            console.log({
+                ABBREV: feature.properties.ABBREV,
+                NAME: feature.properties.NAME
+            });
+        }
+    });
+});
+
+    map.on('load', async () => {
+      
+      // 기본 줌 UI
+      map.addControl(
+        new maplibregl.NavigationControl(),
+        'top-left'
+      );
+      // 초기 위치 복귀 버튼
+      map.addControl(new ResetControl(), 'top-left');
+
+      // ========================
+      // 영문 국가명 한글로 변경
+      // ========================
+      // const res = await fetch('/assets/geojson/countries-ko.json');
+      // const countryList = await res.json();
+
+      // const expr = buildExpression(countryList);
+
+      // map.setLayoutProperty(
+      //   'countries-label',
+      //   'text-field',
+      //   expr
+      // );
+
+
+      // console.log(
+      //   map.getStyle().layers
+      //     .filter(l => l.type === 'symbol')
+      //     .map(l => l.id)
+      // );
+
+      // console.log(
+      //   map.getLayoutProperty("countries-label", 'text-field')
+      // );
+
+      const layers =
+        map.getStyle().layers;
+
+      layers.forEach(layer => {
+        if ((layer.type === 'symbol') && layer.id === 'geolines-label') {
+          map.removeLayer(layer.id);    // 지도상 수평 좌표 선 제거
+        }
+      });
+
+
+      // 커스텀 국가명 추가
+      map.addSource('country-labels', {
+
+        type: 'geojson',
+
+        data: {
+
+          type: 'FeatureCollection',
+
+          features: [
+
+            {
+              type: 'Feature',
+
+              geometry: {
+
+                type: 'Point',
+
+                coordinates: [127.9, 36.6]
+
+              },
+
+              properties: {
+
+                name: '대한민국'
+
+              }
+            },
+            {
+              type: 'Feature',
+
+              geometry: {
+
+                type: 'Point',
+
+                coordinates: [145.74, 15.17]
+
+              },
+
+              properties: {
+
+                name: '사이판'
+
+              }
+            },
+            {
+              type: 'Feature',
+
+              geometry: {
+
+                type: 'Point',
+
+                coordinates: [128, 26.6]
+
+              },
+
+              properties: {
+
+                name: '오키나와'
+
+              }
+            }
+
+          ]
+        }
+
+      });
+
+      // 오키나와 추가
+      map.addSource('okinawa', {
+
+        type: 'geojson',
+
+        data: '/assets/geojson/okinawa.geojson'
+
+      });
+
+      // 사이판 지역 추가
+      map.addSource('saipan', {
+
+        type: 'geojson',
+
+        data: '/assets/geojson/saipan.geojson'
+
+      });
+
+      // 대한민국 국내 시,도 geojson 로드
+      const response =
+        await fetch('/assets/geojson/kr_sido.geojson');
+      const koreaGeojson =
+        await response.json();
+
+      // 기존 source 추가
+      map.addSource('korea', {
+
+        type: 'geojson',
+
+        data: koreaGeojson
+      });
+
+      // =========================
+      // label point 생성  -- 섬 같은 중복 시,도 이름 제거 및 대표 위치 설정
+      // =========================
+
+      const labelFeatures =
+        koreaGeojson.features.map(feature => {
+
+          // polygon 내부 대표 point 생성
+          const point =
+            turf.pointOnFeature(feature);
+
+          return {
+
+            type: 'Feature',
+
+            properties: {
+              ...feature.properties
+            },
+
+            geometry: point.geometry
+          };
+        });
+
+      // label용 geojson
+      const koreaLabelGeojson = {
+
+        type: 'FeatureCollection',
+
+        features: labelFeatures
+      };
+
+
+      // label source
+      map.addSource('korea-label', {
+
+        type: 'geojson',
+
+        data: koreaLabelGeojson
+      });
+
+
+      // ========================
+      // fill layer
+      // =========================
+      map.addLayer({
+
+        id: 'korea-fill',
+
+        type: 'fill',
+
+        source: 'korea',
+
+        paint: {
+
+          'fill-color': '#6F967F'
+
+        }
+
+      });
+
+      // =========================
+      // label layer
+      // =========================
+
+      map.addLayer({
+
+        id: 'sido-label',
+
+        type: 'symbol',
+
+        source: 'korea-label',
+
+        minzoom: 4.9,
+        maxzoom: 10,
+
+        layout: {
+
+          'text-field': ['get', 'CTP_KOR_NM'],
+
+          'text-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            4.7, 11,
+            8, 18
+          ],
+
+          'text-font': ['Noto Sans Bold'],
+
+          'text-allow-overlap': true,
+
+          'text-ignore-placement': true
+        },
+
+        paint: {
+
+          'text-color': 'rgba(255,255,255,0.55)',
+
+          'text-halo-color': 'rgba(0,0,0,0.3)',
+
+          'text-halo-width': 1
+        }
+      });
+
+      // 한국 시군구 추가
+      map.addSource('sigungu', {
+        type: 'geojson',
+        data: '/assets/geojson/kr_sigungu.geojson'
+      });
+
+      // 색상 처리
+      map.addLayer({
+
+        id: 'okinawa-fill',
+
+        type: 'fill',
+
+        source: 'okinawa',
+
+        paint: {
+          'fill-color': 'transparent',
+          'fill-opacity': 0
+        }
+
+      });
+
+
+      map.addLayer({
+
+        id: 'saipan-fill',
+
+        type: 'fill',
+
+        source: 'saipan',
+
+        paint: {
+          'fill-color': 'transparent',
+          'fill-opacity': 0
+        }
+
+      });
+
+      map.addLayer({
+
+        id: 'korea-border',
+
+        type: 'line',
+
+        source: 'korea',
+
+        paint: {
+
+          'line-color': '#ffffff',
+
+          'line-width': 2
+        }
+      });
+
+      // border layer
+      map.addLayer({
+        id: 'sigungu-fill',
+        type: 'fill',
+        source: 'sigungu',
+        paint: {
+          'fill-color': '#088',
+          'fill-opacity': 0.1
+        }
+      });
+
+      map.addLayer({
+        id: 'sigungu-line',
+        type: 'line',
+        source: 'sigungu',
+        minzoom: 5.7,
+        paint: {
+
+          'line-color': '#ffffff',
+
+          'line-width': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+
+            5.7, 1.2,
+            9, 2,
+            11, 3
+          ],
+
+          'line-opacity': 0.9
+        }
+      });
+
+
+      // 국가 라벨 처리
+      map.addLayer({
+
+        id: 'country-label-layer',
+
+        type: 'symbol',
+
+        source: 'country-labels',
+
+        layout: {
+
+          'text-field': ['get', 'name'],
+
+          'text-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+
+            2, 13.5,
+            6, 12.7,
+            10, 14
+          ]
+
+        },
+
+        paint: {
+
+          'text-color': '#111',
+
+          'text-halo-color': '#fff',
+
+          'text-halo-width': 2,
+
+          'text-opacity': [
+            'step',
+            ['zoom'],
+
+            // zoom < 4.7
+            1,
+
+            // zoom >= 4.7
+            4.7,
+            [
+              'case',
+              ['==', ['get', 'name'], '대한민국'],
+              0,
+              1
+            ]
+          ]
+
+        }
+
+      });
+
+      // 한국 시군구 라벨 처리
+      map.addLayer({
+        id: 'sigungu-label',
+
+        type: 'symbol',
+
+        source: 'sigungu',
+
+        minzoom: 5.7,
+        maxzoom: 10,
+
+        layout: {
+
+          'text-field': ['get', 'SIG_KOR_NM'],
+          'text-font': ['Noto Sans Bold'],
+          'text-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+
+            5.7, 8,
+            8, 12,
+            10, 16
+          ],
+
+          'text-allow-overlap': false
+        },
+
+        paint: {
+
+          'text-color': '#ffffff'
+        }
+      });
+
+      const image = await map.loadImage('/assets/css/images/pin.png')
+
+      map.addImage('pin-image', image.data)
+
+      map.addSource('random-pins', {
+        type: 'geojson',
+        data: randomPins
+      })
+
+      map.addLayer({
+        id: 'random-pins-layer',
+        type: 'symbol',
+        source: 'random-pins',
+
+        layout: {
+          'icon-image': 'pin-image',
+
+          'icon-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+
+            4, 0.8,
+            8, 2.0,
+            12, 2.4
+          ],
+
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
+
+          'text-allow-overlap': true,
+          'text-ignore-placement': true
+        }
+      })
+      map.resize();
+
+    });
+
+
+    // 시군구 
+    map.on('click', 'sigungu-fill', (e) => {
+
+      const feature = e.features[0];
+
+      const bounds =
+        new maplibregl.LngLatBounds();
+
+      const geometry =
+        feature.geometry;
+
+      if (geometry.type === 'Polygon') {
+
+        geometry.coordinates[0].forEach(coord => {
+          bounds.extend(coord);
+        });
+
+      }
+
+      else if (geometry.type === 'MultiPolygon') {
+
+        geometry.coordinates.forEach(
+          polygon => {
+
+            polygon[0].forEach(coord => {
+              bounds.extend(coord);
+            });
+
+          }
+        );
+      }
+
+      map.fitBounds(bounds, {
+        padding: 40,
+        duration: 1000
+      });
+
+    });
+
+    // 시군구 줌 처리
+    map.on('zoom', () => {
+
+      const zoom = map.getZoom();
+
+
+      if (zoom >= 5.7) {
+
+        map.setLayoutProperty(
+          'sigungu-line',
+          'visibility',
+          'visible'
+        );
+
+      } else {
+
+        map.setLayoutProperty(
+          'sigungu-line',
+          'visibility',
+          'none'
+        );
+      }
+    });
+
+    map.on('mousemove', 'sigungu-fill', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'sigungu-fill', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    // 커스텀 국가 라벨 클릭 줌 설정
+    map.on('click', 'country-label-layer', (e) => {
+
+      const feature = e.features[0]
+
+      if (!feature) return
+
+      const name = feature.properties.name
+
+      // 라벨 좌표
+      const coordinates = feature.geometry.coordinates
+
+      // 이름별 줌 레벨
+      const zoomMap = {
+        '오키나와': 8,
+        '사이판': 8,
+        '대한민국': 4.8
+      }
+
+      map.flyTo({
+        center: coordinates,
+        zoom: zoomMap[name] || 8,
+        duration: 1000
+      })
+
+    })
+
+    function buildExpression(list) {
+
+      const nameMatch = ['match', ['get', 'NAME']];
+      const abbrMatch = ['match', ['get', 'ABBREV']];
+
+      const seenName = new Set();
+      const seenAbbr = new Set();
+
+      list.forEach(c => {
+
+        if (c.name && !seenName.has(c.name)) {
+          nameMatch.push(c.name);
+          nameMatch.push(c.ko_name || c.name);
+          seenName.add(c.name);
+        }
+
+        if (c.abbr && !seenAbbr.has(c.abbr)) {
+          abbrMatch.push(c.abbr);
+          abbrMatch.push(c.ko_name || c.name);
+          seenAbbr.add(c.abbr);
+        }
+      });
+
+      // ❗ null 제거 (중요)
+      nameMatch.push(['get', 'NAME']);
+      abbrMatch.push(['get', 'NAME']);
+
+      return [
+        'coalesce',
+        nameMatch,
+        abbrMatch,
+        ['get', 'NAME']
+      ];
+    }
+
+  </script>
+
+</body>
+
+</html>
